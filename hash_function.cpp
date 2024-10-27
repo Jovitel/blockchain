@@ -122,7 +122,7 @@ std::string generateHash(const std::string& input) {
     auto end = std::chrono::high_resolution_clock::now(); // Pabaigti matuoti laiką
     std::chrono::duration<double, std::milli> elapsed = end - start; // Laikas milisekundėmis
 
-    std::cout << "Hash sukurimo laikas: " << elapsed.count() << " ms" << std::endl; // Atspausdinti laiką
+    //std::cout << "Hash sukurimo laikas: " << elapsed.count() << " ms" << std::endl; // Atspausdinti laiką
 
     return hash;
 }
