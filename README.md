@@ -66,3 +66,7 @@ transakcijas.
 **user.cpp, user.h** - apibrėžia ir įgyvendina User klasę, kuri naudojama atstovauti blokų grandinės vartotojus. Kiekvienas vartotojas turi unikalų vardą, viešąjį raktą ir atsitiktinį valiutos balansą, kurį galima naudoti transakcijoms. Ši klasė leis lengvai generuoti ir valdyti vartotojus jūsų blokų grandinėje.
 
 **transaction.cpp, transaction.h** - apibrėžia ir įgyvendina Transaction klasę, kuri reprezentuoja vieną transakciją blokų grandinėje. Transakcijos struktūra apima siuntėjo ir gavėjo viešuosius raktus, pervedamos valiutos sumą ir unikalų transakcijos ID, gautą naudojant maišos funkciją. Ši klasė padės tvarkyti ir įrašyti transakcijas į blokus.
+
+## Nauodjimosi instrukcija
+
+1. c
