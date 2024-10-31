@@ -73,5 +73,10 @@ transakcijas.
 
 2. Kodą pasileiskite norimoje aplinkoje pvz: Visual Studio Code
 
-3. Tam, kad paleisti kodą pasirinkite CMD terminalą ir įrašykite: *g++ -o blockchain_simulation main.cpp block.cpp blockchain.cpp transaction.cpp*,
-   tuomet norint paleisti programą reikės įrašyti *blockchain_simulation.exe*
+3. Tam, kad paleisti kodą pasirinkite CMD terminalą ir įrašykite:
+   
+   *g++ -o blockchain_simulation main.cpp block.cpp blockchain.cpp transaction.cpp*,
+   
+   tuomet norint paleisti programą reikės įrašyti
+   
+    *blockchain_simulation.exe*
