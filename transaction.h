@@ -1,22 +1,18 @@
-// transaction.h
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 
 #include <string>
+#include <iostream>
 
 class Transaction {
 public:
-    // Transakcijos duomenys
     std::string transactionID;
     std::string senderPublicKey;
     std::string receiverPublicKey;
-    double amount;
+    int amount;
 
-    // Konstruktorius
-    Transaction(const std::string& sender, const std::string& receiver, double amount);
-
-    // Funkcija transakcijos maišos skaičiavimui
-    std::string calculateTransactionHash() const;
+    Transaction(std::string sender, std::string receiver, int amount);
+    void printTransaction() const; // Naujas metodas
 };
 
-#endif // TRANSACTION_H
+#endif

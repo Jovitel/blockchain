@@ -1,4 +1,3 @@
-// blockchain.h
 #ifndef BLOCKCHAIN_H
 #define BLOCKCHAIN_H
 
@@ -7,22 +6,16 @@
 
 class Blockchain {
 public:
-    // Blokų grandinės duomenys
-    std::vector<Block> chain;
-    int difficulty;
-
-    // Konstruktorius
-    Blockchain(int difficulty);
-
-    // Funkcijos
+    Blockchain();
     void addBlock(Block newBlock);
-    Block createGenesisBlock() const;
     Block getLatestBlock() const;
     void printBlockchain() const;
+    int getDifficulty() const;
 
 private:
-    // Patikrinimas, ar blokas yra galiojantis
-    bool isBlockValid(const Block& newBlock, const Block& previousBlock) const;
+    std::vector<Block> chain;
+    Block createGenesisBlock() const; // Deklaruokite kaip const
+    int difficulty;
 };
 
-#endif // BLOCKCHAIN_H
+#endif

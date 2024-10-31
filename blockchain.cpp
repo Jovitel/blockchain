@@ -1,53 +1,33 @@
-// blockchain.cpp
 #include "blockchain.h"
 #include <iostream>
 
-// Konstruktorius
-Blockchain::Blockchain(int difficulty)
-    : difficulty(difficulty) {
-    // Pridedame pradžios bloką (Genesis Block)
-    chain.push_back(createGenesisBlock());
+Blockchain::Blockchain() {
+    difficulty = 2; // Nustatykite pradinį sunkumą
+    chain.push_back(createGenesisBlock()); // Pridėti pradinį bloką
 }
 
-// Pradinis blokas
-Block Blockchain::createGenesisBlock() const {
-    return Block(1, "0", difficulty); // Versija 1, ankstesnio bloko maišos reikšmė "0"
+Block Blockchain::createGenesisBlock() const { // Grąžinimo tipas turi būti Block
+    return Block("0", {}, difficulty); // Nustatykite pradinį bloką
 }
 
-// Paskutinio bloko gavimas
 Block Blockchain::getLatestBlock() const {
     return chain.back();
 }
 
-// Bloko pridėjimas prie grandinės
 void Blockchain::addBlock(Block newBlock) {
-    newBlock.previousBlockHash = getLatestBlock().currentBlockHash; // Nustatome ankstesnio bloko maišą
-    newBlock.mineBlock(); // Atliekame kasimą
-    if (isBlockValid(newBlock, getLatestBlock())) {
-        chain.push_back(newBlock);
-        std::cout << "Blokas pridėtas: " << newBlock.currentBlockHash << std::endl;
-    } else {
-        std::cout << "Blokas negaliojantis, nepridėtas." << std::endl;
-    }
+    newBlock.previousBlockHash = getLatestBlock().currentBlockHash;
+    newBlock.mineBlock();
+    chain.push_back(newBlock);
 }
 
-// Bloko galiojimo tikrinimas
-bool Blockchain::isBlockValid(const Block& newBlock, const Block& previousBlock) const {
-    if (newBlock.previousBlockHash != previousBlock.currentBlockHash) {
-        return false;
-    }
-    if (newBlock.calculateHash() != newBlock.currentBlockHash) {
-        return false;
-    }
-    return true;
-}
-
-// Blokų grandinės spausdinimas
 void Blockchain::printBlockchain() const {
+    std::cout << "Blokų grandinė:" << std::endl;
     for (const auto& block : chain) {
-        std::cout << "Bloko maišos reikšmė: " << block.currentBlockHash << std::endl;
-        std::cout << "Ankstesnio bloko maišos reikšmė: " << block.previousBlockHash << std::endl;
-        std::cout << "Transakcijų skaičius: " << block.transactions.size() << std::endl;
-        std::cout << "-----------------------------" << std::endl;
+        block.printBlock();
+        std::cout << std::endl; // Pridėti tarpą tarp blokų
     }
+}
+
+int Blockchain::getDifficulty() const {
+    return difficulty; // Grąžinkite sunkumą
 }

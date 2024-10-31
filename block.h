@@ -1,40 +1,26 @@
-// block.h
 #ifndef BLOCK_H
 #define BLOCK_H
 
 #include <string>
 #include <vector>
-#include <ctime>
 #include "transaction.h"
 
-// Bloko antraštė
-struct BlockHeader {
-    int version;                           // Blokų grandinės versija
-    std::string previousBlockHash;         // Ankstesnio bloko maišos reikšmė
-    std::string merkleRootHash;            // Merkle medžio šaknis (visų transakcijų maišos)
-    std::time_t timestamp;                 // Laiko žyma
-    int nonce;                             // Atsitiktinis skaičius (kasimui)
-    int difficulty;                        // Sunkumo lygis (maišos sudėtingumas)
-};
-
-// Bloko struktūra
 class Block {
 public:
-    BlockHeader header;                    // Bloko antraštė
-    std::vector<Transaction> transactions; // Bloko turinys (transakcijos)
-    std::string currentBlockHash;          // Šio bloko maišos reikšmė
+    std::string previousBlockHash;   // Ankstesnio bloko maišos reikšmė
+    std::string currentBlockHash;    // Šio bloko maišos reikšmė
+    std::string merkleRootHash;      // Merkle šaknies maišos reikšmė
+    long timestamp;                   // Laiko žyma
+    int version;                     // Bloko versija
+    int nonce;                       // Atsitiktinis skaičius
+    int difficultyTarget;            // Sudėtingumo lygis
+    std::vector<Transaction> transactions; // Transakcijos
 
-    // Konstruktorius
-    Block(int index, const std::string& previousBlockHash, int difficulty);
-
-    // Funkcijos
-    std::string calculateHash() const;     // Apskaičiuoti bloko maišą
-    void mineBlock();                      // Kasti bloką
-    std::string calculateMerkleRoot() const; // Apskaičiuoti Merkle šaknį
-
-private:
-    int index;                             // Bloko indeksas grandinėje
-    std::string calculateBlockHeader() const;
+    // Konstruktoriai ir metodai
+    Block(std::string prevHash, std::vector<Transaction> tx, int diffTarget);
+    void mineBlock();
+    std::string calculateHash() const;
+    void printBlock() const; // Atnaujintas metodas
 };
 
-#endif // BLOCK_H
+#endif

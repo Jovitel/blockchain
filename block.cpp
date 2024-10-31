@@ -1,58 +1,41 @@
-// block.cpp
 #include "block.h"
-#include "hash_function.h" // Naudokite savo maišos funkciją
+#include <iostream>
 #include <sstream>
+#include <ctime>
 
-// Konstruktorius
-Block::Block(int index, const std::string& previousBlockHash, int difficulty)
-    : index(index) {
-    header.previousBlockHash = previousBlockHash;
-    header.difficulty = difficulty;
-    header.timestamp = std::time(nullptr);
-    header.version = 1; // Nustatoma versija
-    header.nonce = 0;
+Block::Block(std::string prevHash, std::vector<Transaction> tx, int diffTarget) 
+    : previousBlockHash(prevHash), currentBlockHash(""), merkleRootHash(""), timestamp(0), version(1), nonce(0), difficultyTarget(diffTarget), transactions(tx) {
+    timestamp = time(nullptr);
+    merkleRootHash = "MerkleRootExample"; // Turėtų būti generuojama pagal transakcijas
+    currentBlockHash = calculateHash();
 }
 
-// Bloko maišos skaičiavimas
 std::string Block::calculateHash() const {
     std::stringstream ss;
-    ss << header.version << header.previousBlockHash << header.merkleRootHash
-       << header.timestamp << header.nonce << header.difficulty;
-
-    return generateHash(ss.str()); // Naudojama jūsų maišos funkcija
+    ss << previousBlockHash << merkleRootHash << timestamp << version << nonce;
+    return std::to_string(std::hash<std::string>{}(ss.str())); // Laikinas hash'o generavimas
 }
 
-// Bloko kasimo funkcija
 void Block::mineBlock() {
-    header.merkleRootHash = calculateMerkleRoot(); // Apskaičiuojama Merkle šaknis
-    std::string hash;
+    std::string target(difficultyTarget, '0');
     do {
-        header.nonce++;
-        hash = calculateHash();
-    } while (hash.substr(0, header.difficulty) != std::string(header.difficulty, '0'));
-
-    currentBlockHash = hash;
+        nonce++;
+        currentBlockHash = calculateHash();
+    } while (currentBlockHash.substr(0, difficultyTarget) != target);
+    std::cout << "Išminuotas blokas: " << currentBlockHash << std::endl;
 }
 
-// Merkle šaknies apskaičiavimas
-std::string Block::calculateMerkleRoot() const {
-    if (transactions.empty()) return "";
+void Block::printBlock() const {
+    std::cout << "Bloko maišos reikšmė: " << currentBlockHash << std::endl;
+    std::cout << "Ankstesnio bloko maišos reikšmė: " << previousBlockHash << std::endl;
+    std::cout << "Merkle šaknies maišos reikšmė: " << merkleRootHash << std::endl;
+    std::cout << "Nonce: " << nonce << std::endl;
+    std::cout << "Timestamp: " << timestamp << std::endl;
+    std::cout << "Versija: " << version << std::endl;
 
-    std::vector<std::string> merkleTree;
-    for (const auto& tx : transactions) {
-        merkleTree.push_back(tx.transactionID);
+    // Spausdiname transakcijas
+    std::cout << "Transakcijos:" << std::endl;
+    for (const auto& transaction : transactions) {
+        std::cout << "  - " << transaction.transactionID << ": " << transaction.amount << " (iš: " << transaction.senderPublicKey << ", į: " << transaction.receiverPublicKey << ")" << std::endl; // Išvedame kiekvieną transakciją
     }
-
-    while (merkleTree.size() > 1) {
-        if (merkleTree.size() % 2 != 0) {
-            merkleTree.push_back(merkleTree.back());
-        }
-
-        std::vector<std::string> newLayer;
-        for (size_t i = 0; i < merkleTree.size(); i += 2) {
-            newLayer.push_back(generateHash(merkleTree[i] + merkleTree[i + 1]));
-        }
-        merkleTree = newLayer;
-    }
-    return merkleTree.front();
 }
