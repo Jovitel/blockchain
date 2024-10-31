@@ -2,16 +2,17 @@
 #define TRANSACTION_H
 
 #include <string>
+#include <iostream>
 
 class Transaction {
 public:
+    std::string transactionID;
     std::string senderPublicKey;
     std::string receiverPublicKey;
     int amount;
-    std::string transactionID;
 
     Transaction(std::string sender, std::string receiver, int amount);
-    void printTransaction() const;
+    void printTransaction() const; // Naujas metodas
 };
 
 #endif

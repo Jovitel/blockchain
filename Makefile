@@ -1,20 +1,14 @@
-# Nustatymai
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+# Makefile
+
+CXX = nmake
+CXXFLAGS = /std:c++17 /W3
 SOURCES = main.cpp block.cpp blockchain.cpp transaction.cpp user.cpp
-OBJECTS = $(SOURCES:.cpp=.o)
-EXECUTABLE = blockchain_simulation
+TARGET = blockchain_simulation.exe
 
-# Taisyklių
-all: $(EXECUTABLE)
+all: $(TARGET)
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CXX) $(OBJECTS) -o $@
-
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(TARGET): $(SOURCES)
+	$(CXX) $(CXXFLAGS) $(SOURCES) -o $(TARGET)
 
 clean:
-	del $(OBJECTS) $(EXECUTABLE)
-
-.PHONY: all clean
+	del $(TARGET)

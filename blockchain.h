@@ -12,9 +12,8 @@ public:
     void printBlockchain() const;
     int getDifficulty() const;
 
-    std::vector<Block> chain; // Pakeista į public
-
 private:
+    std::vector<Block> chain;
     Block createGenesisBlock() const; // Deklaruokite kaip const
     int difficulty;
 };
