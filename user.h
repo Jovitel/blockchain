@@ -1,19 +1,23 @@
-#ifndef USER_H
-#define USER_H
+#ifndef VARTOTOJAS_H
+#define VARTOTOJAS_H
 
 #include <string>
 
-class User {
+class Vartotojas {
+private:
+    std::string vardas;
+    std::string viesasis_raktas;
+    int balansas;
+
 public:
-    std::string name;
-    std::string publicKey;
-    double balance;
+    Vartotojas() = default;
+    Vartotojas(const std::string& vardas, const std::string& viesasis_raktas, int balansas) 
+        : vardas(vardas), viesasis_raktas(viesasis_raktas), balansas(balansas) {}
 
-    // Konstruktorius
-    User(const std::string& name, const std::string& publicKey, double balance);
-
-    // Funkcija balanso atnaujinimui
-    void updateBalance(double amount);
+    std::string getVardas() const { return vardas; }
+    std::string getViesasisRaktas() const { return viesasis_raktas; }
+    int getBalansas() const { return balansas; }
+    void setBalansas(int newBalansas) { balansas = newBalansas; }
 };
 
-#endif // USER_H
+#endif // VARTOTOJAS_H

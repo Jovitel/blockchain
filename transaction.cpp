@@ -1,5 +1,6 @@
 #include "transaction.h"
 #include <sstream>
+#include <iostream>
 
 Transaction::Transaction(std::string sender, std::string receiver, int amount)
     : senderPublicKey(sender), receiverPublicKey(receiver), amount(amount) {
@@ -8,7 +9,6 @@ Transaction::Transaction(std::string sender, std::string receiver, int amount)
     transactionID = std::to_string(std::hash<std::string>{}(ss.str())); // Laikinas ID generavimas
 }
 
-// Print method implementation
 void Transaction::printTransaction() const {
     std::cout << "Transakcijos ID: " << transactionID << std::endl;
     std::cout << "Siuntėjo viešasis raktas: " << senderPublicKey << std::endl;
