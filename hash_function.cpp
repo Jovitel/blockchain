@@ -14,7 +14,8 @@ std::string stringToASCII(const std::string& input) {
         asciiStream << std::setw(2) << std::setfill('0') << std::hex << (int)c;
     }
 
-    return asciiStream.str();
+    std::string result = asciiStream.str();
+    return result;
 }
 
 std::string modifyString(const std::string& input) {
@@ -37,6 +38,8 @@ std::string modifyString(const std::string& input) {
 
 // Funkcija, kuri sumažina kiekvieną skaitmenį iki vieno skaitmens po daugybos
 int reduceToOneDigit(int num) {
+    if (num == 0) return 0; // Pridėta sąlyga, kad nenukristų į 0
+
     int product = 1, sum = 0;
 
     // Sudauginame skaitmenis
@@ -53,11 +56,7 @@ int reduceToOneDigit(int num) {
     }
 
     // Jei suma daugiau nei vienženklis, tęsiame procesą
-    if (sum > 9) {
-        return reduceToOneDigit(sum);
-    }
-
-    return sum;
+    return (sum > 9) ? reduceToOneDigit(sum) : sum;
 }
 
 // Funkcija, kuri apdoroja simbolius, jei ilgis > 64
@@ -67,13 +66,15 @@ std::string processLongerInput(const std::string& input) {
 
     // Padaliname į 32 dalis
     int chunkSize = input.length() / 32;
+    int remainder = input.length() % 32; // Liekančių simbolių
 
     for (int i = 0; i < 32; ++i) {
         int chunkSum = 0;
+        int currentChunkSize = (i < remainder) ? (chunkSize + 1) : chunkSize; // Paskirstome liekančius simbolius
 
         // Kiekvieną dalį verčiame į ASCII ir atliekame operacijas
-        for (int j = 0; j < chunkSize; ++j) {
-            char c = input[i * chunkSize + j];
+        for (int j = 0; j < currentChunkSize; ++j) {
+            char c = input[i * chunkSize + j + (i < remainder ? i : remainder)];
             int asciiValue = static_cast<int>(c);
             chunkSum += reduceToOneDigit(asciiValue); // Sumažiname iki vieno skaitmens
         }
@@ -102,9 +103,13 @@ std::string generateHash(const std::string& input) {
         std::string asciiHash = stringToASCII(input);
 
         // Pridedame daugiau simbolių, jei reikia
-        while (asciiHash.length() < 64) {
-            std::string modifiedInput = modifyString(input);
+        int attempt = 0;
+        const int maxAttempts = 100; // Maksimalus bandymų skaičius
+
+        while (asciiHash.length() < 64 && attempt < maxAttempts) {
+            std::string modifiedInput = modifyString(asciiHash);  // Naudojame jau sugeneruotą ASCII kaip įvestį
             asciiHash += stringToASCII(modifiedInput);
+            attempt++;
         }
 
         // Apkarpome iki 64 simbolių
@@ -113,16 +118,23 @@ std::string generateHash(const std::string& input) {
         }
 
         hash = asciiHash;
-
     } else {
         // Jei įvesties ilgis > 64, naudojame antrąjį metodą
         hash = processLongerInput(input);
     }
 
-    auto end = std::chrono::high_resolution_clock::now(); // Pabaigti matuoti laiką
-    std::chrono::duration<double, std::milli> elapsed = end - start; // Laikas milisekundėmis
+    // Patikrinkite maišos ilgio
+    if (hash.length() < 64) {
+        // Pridėti simbolius, kad pasiektumėte 64 simbolių ilgį
+        while (hash.length() < 64) {
+            hash += "0"; // Galite pasirinkti kitus simbolius, jei norite
+        }
+    } else if (hash.length() > 64) {
+        hash = hash.substr(0, 64);
+    }
 
-    //std::cout << "Hash sukurimo laikas: " << elapsed.count() << " ms" << std::endl; // Atspausdinti laiką
+    auto end = std::chrono::high_resolution_clock::now(); // Pabaigti matuoti laiką
+   // std::chrono::duration<double, std::milli> elapsed = end - start; // Laikas milisekundėmis
 
     return hash;
 }

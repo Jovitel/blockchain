@@ -1,17 +1,42 @@
 #include "transaction.h"
-#include <sstream>
+#include <iostream>
+#include <vector>
+#include <cstdlib> // dėl rand()
+#include <ctime>
+#include <fstream> // ofstream
 
-Transaction::Transaction(std::string sender, std::string receiver, int amount)
-    : senderPublicKey(sender), receiverPublicKey(receiver), amount(amount) {
-    std::stringstream ss;
-    ss << sender << receiver << amount;
-    transactionID = std::to_string(std::hash<std::string>{}(ss.str())); // Laikinas ID generavimas
-}
+std::vector<Transaction> generateTransactionsList(int numberOfTransactions, const std::vector<User>& users, const std::unordered_map<std::string, double>& balances) {
+    srand(static_cast<unsigned>(time(0))); // Inicializuojame atsitiktinių skaičių generatorių
+    std::vector<Transaction> generatedTransactions;
+    std::ofstream outFile("transaction_utxo.txt", std::ios::trunc);
 
-// Print method implementation
-void Transaction::printTransaction() const {
-    std::cout << "Transakcijos ID: " << transactionID << std::endl;
-    std::cout << "Siuntėjo viešasis raktas: " << senderPublicKey << std::endl;
-    std::cout << "Gavėjo viešasis raktas: " << receiverPublicKey << std::endl;
-    std::cout << "Suma: " << amount << std::endl;
+    if (!outFile.is_open()) {
+        std::cerr << "Klaida atidarant failą rašymui!\n";
+        return {};
+    }
+
+    for (int i = 0; i < numberOfTransactions; ++i) {
+        std::string sender = users[rand() % users.size()].publicKey;
+        std::string receiver = users[rand() % users.size()].publicKey;
+        int amount = rand() % 100 + 1; // Atsitiktinė suma
+
+        if (balances.at(sender) < amount) {
+            outFile << "Siuntėjo balansas nepakankamas.\n";
+            continue;
+        }
+
+        Transaction transaction(sender, receiver, amount);
+        if (transaction.checkTransactionHash()) {
+            generatedTransactions.push_back(transaction);
+            outFile << "Transakcija: " << transaction.transactionID
+                    << ", Siuntėjas: " << transaction.senderPublicKey
+                    << ", Gavėjas: " << transaction.receiverPublicKey
+                    << ", Suma: " << transaction.amount << "BTC" << "\n";
+        } else {
+            outFile << "Transakcijos maišas neteisingas.\n";
+        }
+    }
+
+    outFile.close();
+    return generatedTransactions;
 }

@@ -2,18 +2,15 @@
 #define USER_H
 
 #include <string>
+#include <vector> // Pridėkite šį įrašą
 
-class User {
-public:
+struct User {
     std::string name;
     std::string publicKey;
     double balance;
-
-    // Konstruktorius
-    User(const std::string& name, const std::string& publicKey, double balance);
-
-    // Funkcija balanso atnaujinimui
-    void updateBalance(double amount);
 };
+
+std::vector<User> generateUsersList(int numberOfUsers);
+std::string generateUniqueHash(const std::string& userName, int userID, double balance);
 
 #endif // USER_H

@@ -1,3 +1,0 @@
-1132356424966395612: 100 (iš: SenderPublicKey1, į: ReceiverPublicKey1)
-19364077816996626: 200 (iš: SenderPublicKey2, į: ReceiverPublicKey2)
-8950115809279229983: 300 (iš: SenderPublicKey3, į: ReceiverPublicKey3)

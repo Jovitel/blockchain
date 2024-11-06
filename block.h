@@ -1,26 +1,31 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
-#include <string>
+#include <iostream>
 #include <vector>
+#include <string>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 #include "transaction.h"
 
 class Block {
 public:
-    std::string previousBlockHash;   // Ankstesnio bloko maišos reikšmė
-    std::string currentBlockHash;    // Šio bloko maišos reikšmė
-    std::string merkleRootHash;      // Merkle šaknies maišos reikšmė
-    long timestamp;                   // Laiko žyma
-    int version;                     // Bloko versija
-    int nonce;                       // Atsitiktinis skaičius
-    int difficultyTarget;            // Sudėtingumo lygis
-    std::vector<Transaction> transactions; // Transakcijos
+    std::string previousHash;
+    std::string merkleRoot;
+    std::vector<Transaction> transactions;
+    time_t timestamp;
+    int nonce;
+    int difficulty;
+    std::string version; // Pridėtas versijos kintamasis
 
-    // Konstruktoriai ir metodai
-    Block(std::string prevHash, std::vector<Transaction> tx, int diffTarget);
-    void mineBlock();
+    Block(std::string prevHash, const std::vector<Transaction>& txs, int diff);
+
     std::string calculateHash() const;
-    void printBlock() const; // Atnaujintas metodas
+    void mineBlock();
+
+private:
+    std::string createMerkleRoot() const;
 };
 
-#endif
+#endif // BLOCK_H

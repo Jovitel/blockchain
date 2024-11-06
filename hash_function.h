@@ -9,4 +9,5 @@ std::string modifyString(const std::string& input);
 std::string generateHash(const std::string& input);
 std::string processLongerInput(const std::string& input); // Pridėta nauja funkcija
 std::string generateHash(const std::string& input);
+std::string generateUniqueHash(const std::string& userName, int userID, double balance) ;
 #endif // HASH_FUNCTION_H
