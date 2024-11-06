@@ -112,6 +112,8 @@ Programos vykdymas baigtas.
 
 * Jei n, įrašoma, kiek blokų norima sugeneruoti. (atsiranda faile block.txt)
 
+# Atliktos užduotys
+
 ## Vartotojų generavimas
 
 **1. User struktūra (user.h):**
