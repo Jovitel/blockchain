@@ -2,11 +2,9 @@
 #define TRANSACTION_H
 
 #include <string>
-#include <vector>
 #include <unordered_map>
-#include "utxo.h"
 #include "user.h"
-#include <functional> // std::hash
+#include "hash_function.h"  // Pridėta dėl maišos funkcijos
 
 struct Transaction {
     std::string transactionID;
@@ -17,12 +15,13 @@ struct Transaction {
     // Konstruktoras
     Transaction(const std::string& sender, const std::string& receiver, int amt)
         : senderPublicKey(sender), receiverPublicKey(receiver), amount(amt) {
-        transactionID = generateTransactionID(); // Automatiškai sugeneruojame transakcijos ID
+        transactionID = generateTransactionID(); // Sugeneruojame transakcijos ID naudodami maišos funkciją
     }
 
-    // Generuoja transakcijos ID (naudojama kaip maišas)
+    // Generuoja transakcijos ID naudodama maišos funkciją
     std::string generateTransactionID() const {
-        return std::to_string(std::hash<std::string>{}(senderPublicKey + receiverPublicKey + std::to_string(amount)));
+        std::string transactionData = senderPublicKey + receiverPublicKey + std::to_string(amount);
+        return generateHash(transactionData);  // Naudojame tavo maišos funkciją
     }
 
     // Funkcija tikrina, ar transakcijos maišas teisingas
