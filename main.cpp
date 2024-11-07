@@ -6,6 +6,7 @@
 #include "utxo.h"
 #include "block.h"
 #include <unordered_map>
+#include <chrono> // Laiko matavimui
 
 // Deklaruojame funkciją, kad galėtume nuskaityti transakcijas iš failo
 std::vector<Transaction> readTransactionsFromFile(const std::string& filename);
@@ -14,7 +15,7 @@ std::vector<Transaction> readTransactionsFromFile(const std::string& filename);
 void updateUserBalances(const std::vector<User>& users) {
     std::ofstream outFile("user_new.txt", std::ios::trunc);
     if (!outFile.is_open()) {
-        std::cerr << "Klaida atidarant failą rašymui!\n";
+        std::cerr << "Klaida atidarant faila rasymui!\n";
         return;
     }
 
@@ -29,24 +30,24 @@ void updateUserBalances(const std::vector<User>& users) {
 void clearFiles() {
     std::ofstream blockFile("block.txt", std::ios::trunc);
     std::ofstream usersFile("users.txt", std::ios::trunc);
-    std::ofstream userNewFile("user_new.txt", std::ios::trunc);
+    std::ofstream userNewFile1("user_new.txt", std::ios::trunc);  // Renamed variable
+    std::ofstream transactionUTXOFile("transaction_utxo.txt", std::ios::trunc);  // Renamed variable
 
-    if (!blockFile.is_open() || !usersFile.is_open() || !userNewFile.is_open()) {
-        std::cerr << "Klaida atidarant failus išvalymui!\n";
+    if (!blockFile.is_open() || !usersFile.is_open() || !userNewFile1.is_open() || !transactionUTXOFile.is_open()) {
+        std::cerr << "Klaida atidarant failus isvalymui!\n";
         return;
     }
 
     blockFile.close();
     usersFile.close();
-    userNewFile.close();
+    userNewFile1.close();
+    transactionUTXOFile.close();
 }
 
 int main() {
-     // Išvalyti failus po programos pabaigos
+    // Išvalyti failus po programos pabaigos
     clearFiles();
-    int difficulty;
-    std::cout << "Įveskite sunkumo lygį (difficulty): ";
-    std::cin >> difficulty;
+    int difficulty = 1;
 
     char generateUsers;
     char generateTransactions;
@@ -57,6 +58,7 @@ int main() {
     std::vector<User> users;
     std::vector<Transaction> generatedTransactions; // Masyvas sugeneruotoms transakcijoms
     std::unordered_map<std::string, double> balances; // Žemėlapis balansams
+    char s;
 
     // Klausia apie vartotojų generavimą
     std::cout << "Ar norite sugeneruoti vartotojus? (t/n): ";
@@ -64,7 +66,7 @@ int main() {
 
     if (generateUsers == 't' || generateUsers == 'T') {
         users = generateUsersList(userCount);
-        
+
         // Sukuriame balansus vartotojams
         for (const auto& user : users) {
             balances[user.publicKey] = user.balance;  // Priskiriame balansą vartotojui
@@ -125,24 +127,67 @@ int main() {
         int blockCount;
         std::cout << "Kiek bloku norite sugeneruoti? ";
         std::cin >> blockCount;
+        std::cout << "Ar norite atlikti bandyma? (t/n): ";
+        std::cin >> s;
+        if (s == 't' || s == 'T') {
+            int m;
+            std::cout << "Per kiek s norite generuoti? ";
+            std::cin >> m;
 
-        for (int i = 0; i < blockCount && !generatedTransactions.empty(); ++i) {
-            std::vector<Transaction> blockTransactions;
+            // Laiko pradžia
+            auto start = std::chrono::high_resolution_clock::now();
 
-            for (int j = 0; j < transactionsPerBlock && !generatedTransactions.empty(); ++j) {
-                blockTransactions.push_back(generatedTransactions.back());
-                generatedTransactions.pop_back();
+            for (int i = 0; i < blockCount && !generatedTransactions.empty(); ++i) {
+                // Patikriname, kiek laiko praėjo
+                auto now = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration<double>(now - start).count();  // Laiko trukmė su dešimtainiu tikslumu
+                
+                if (duration > m / 1000.0) {  // Palyginame su sekundėmis, nes m yra milisekundėmis
+                    std::cout << "Laiko limitas virsytas, nutraukiame generavima.\n";
+                    break;
+                }
+
+                std::vector<Transaction> blockTransactions;
+
+                for (int j = 0; j < transactionsPerBlock && !generatedTransactions.empty(); ++j) {
+                    blockTransactions.push_back(generatedTransactions.back());
+                    generatedTransactions.pop_back();
+                }
+
+                std::string previousHash = (i == 0) ? "2" : blockchain.back().calculateHash();
+                Block newBlock(previousHash, blockTransactions, difficulty);
+                newBlock.mineBlock();
+
+                blockchain.push_back(newBlock);
+                std::cout << "Blokas #" << (i + 1) << " buvo sekmingai iskastas su " << blockTransactions.size() << " transakcijomis.\n";
+
+                // Atlikti vartotojų balansų atnaujinimą po bloko maišos radimo
+                updateUserBalances(users);
             }
 
-            std::string previousHash = (i == 0) ? "2" : blockchain.back().calculateHash();
-            Block newBlock(previousHash, blockTransactions, difficulty);
-            newBlock.mineBlock();
+            // Užfiksuojame laiką, per kurį buvo sugeneruoti blokai (milisekundėmis su dešimtainiu tikslumu)
+            auto end = std::chrono::high_resolution_clock::now();
+            auto totalDuration = std::chrono::duration<double>(end - start).count();  // Vėl naudojame double tipo trukmę
+            std::cout << "Blokai buvo sugeneruoti per " << totalDuration * 1000 << " milisekundziu.\n";  // Padauginame iš 1000, kad rodyti milisekundes
+        } else {
+            for (int i = 0; i < blockCount && !generatedTransactions.empty(); ++i) {
+                std::vector<Transaction> blockTransactions;
 
-            blockchain.push_back(newBlock);
-            std::cout << "Blokas #" << (i + 1) << " buvo sekmingai iskastas su " << blockTransactions.size() << " transakcijomis.\n";
+                for (int j = 0; j < transactionsPerBlock && !generatedTransactions.empty(); ++j) {
+                    blockTransactions.push_back(generatedTransactions.back());
+                    generatedTransactions.pop_back();
+                }
 
-            // Atlikti vartotojų balansų atnaujinimą po bloko maišos radimo
-            updateUserBalances(users);
+                std::string previousHash = (i == 0) ? "2" : blockchain.back().calculateHash();
+                Block newBlock(previousHash, blockTransactions, difficulty);
+                newBlock.mineBlock();
+
+                blockchain.push_back(newBlock);
+                std::cout << "Blokas #" << (i + 1) << " buvo sekmingai iskastas su " << blockTransactions.size() << " transakcijomis.\n";
+
+                // Atlikti vartotojų balansų atnaujinimą po bloko maišos radimo
+                updateUserBalances(users);
+            }
         }
     }
 

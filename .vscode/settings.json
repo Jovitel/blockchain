@@ -112,6 +112,9 @@
     "variant": "cpp",
     "bitset": "cpp",
     "fstream": "cpp",
-    "cinttypes": "cpp"
+    "cinttypes": "cpp",
+    "semaphore": "cpp",
+    "stop_token": "cpp",
+    "thread": "cpp"
   }
 }
