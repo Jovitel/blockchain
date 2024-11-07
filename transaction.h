@@ -20,8 +20,8 @@ struct Transaction {
 
     // Generuoja transakcijos ID naudodama maišos funkciją
     std::string generateTransactionID() const {
-        std::string transactionData = senderPublicKey + receiverPublicKey + std::to_string(amount);
-        return generateHash(transactionData);  // Naudojame tavo maišos funkciją
+        std::string transactionData = senderPublicKey + receiverPublicKey;
+        return generateHash(transactionData);  // Naudojame maišos funkciją
     }
 
     // Funkcija tikrina, ar transakcijos maišas teisingas

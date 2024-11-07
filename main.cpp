@@ -25,13 +25,35 @@ void updateUserBalances(const std::vector<User>& users) {
     outFile.close();
 }
 
+// Funkcija išvalyti failus
+void clearFiles() {
+    std::ofstream blockFile("block.txt", std::ios::trunc);
+    std::ofstream usersFile("users.txt", std::ios::trunc);
+    std::ofstream userNewFile("user_new.txt", std::ios::trunc);
+
+    if (!blockFile.is_open() || !usersFile.is_open() || !userNewFile.is_open()) {
+        std::cerr << "Klaida atidarant failus išvalymui!\n";
+        return;
+    }
+
+    blockFile.close();
+    usersFile.close();
+    userNewFile.close();
+}
+
 int main() {
+     // Išvalyti failus po programos pabaigos
+    clearFiles();
+    int difficulty;
+    std::cout << "Įveskite sunkumo lygį (difficulty): ";
+    std::cin >> difficulty;
+
     char generateUsers;
     char generateTransactions;
     char generateUntilNoTransactions;
     const int userCount = 1000;
     const int transactionCount = 10000;
-    const int transactionsPerBlock = 10; // Apibrėžkite čia, kiek transakcijų bus kiekviename bloke
+    const int transactionsPerBlock = 10; // Kiek transakcijų bus kiekviename bloke
     std::vector<User> users;
     std::vector<Transaction> generatedTransactions; // Masyvas sugeneruotoms transakcijoms
     std::unordered_map<std::string, double> balances; // Žemėlapis balansams
@@ -89,7 +111,7 @@ int main() {
             }
 
             std::string previousHash = blockchain.empty() ? "2" : blockchain.back().calculateHash();
-            Block newBlock(previousHash, blockTransactions, 0); // 2 - sunkumo lygis
+            Block newBlock(previousHash, blockTransactions, difficulty);
             newBlock.mineBlock();
 
             blockchain.push_back(newBlock);
@@ -113,7 +135,7 @@ int main() {
             }
 
             std::string previousHash = (i == 0) ? "2" : blockchain.back().calculateHash();
-            Block newBlock(previousHash, blockTransactions, 0); // 2 - sunkumo lygis
+            Block newBlock(previousHash, blockTransactions, difficulty);
             newBlock.mineBlock();
 
             blockchain.push_back(newBlock);

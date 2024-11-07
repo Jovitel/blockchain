@@ -1,4 +1,4 @@
-#include "block.h" // Įtraukiama Block klasės antraštė
+ #include "block.h" // Įtraukiama Block klasės antraštė
 #include "hash_function.h" // Įtraukiama maišos funkcijos antraštė
 #include <algorithm> // Įtraukiama algoritmų biblioteka
 #include <iostream> // Įtraukiama įvesties/išvesties biblioteka
@@ -47,18 +47,43 @@ std::string Block::calculateHash() const {
 
 // Funkcija, kuri kasybos blokus
 void Block::mineBlock() {
-    std::string hashPrefix(difficulty, '0'); // Sukuriame prefiksą pagal sunkumą
+    std::string hashPrefix(difficulty, '0'); // Tikslas su difficulty nulių pradžioje
     std::string hash;
-    
-    do {
-        timestamp = std::time(nullptr); // Atnaujiname laiko žymą
-        nonce++; // Padidiname nonce
+    nonce = 0;
+
+    // Ciklas, kuris kartojasi tiek kartų, kiek yra difficulty
+    for (int i = 0; i < difficulty; ++i) {
         hash = calculateHash(); // Apskaičiuojame maišą
-    } while (hash.substr(0, difficulty) != hashPrefix); // Kartojame, kol randame tinkamą maišą
-    
-    // Atidarome failą, kad rašytume blokų informaciją
-    std::ofstream outFile("block.txt", std::ios::app); // Naudojame append režimą, kad pridėtume prie failo
-    if (outFile.is_open()) {
+
+        // Jei difficulty > 0, modifikuojame maišą:
+        hash = "0" + hash.substr(0, hash.size() - 1); // Pridėti nulį priekyje ir pašalinti paskutinį simbolį
+
+        // Užtikriname, kad maišas būtų 64 simbolių ilgio
+        if (hash.size() > 64) {
+            hash = hash.substr(0, 64); // Pašalinti per daug simbolių, jei jų yra daugiau nei 64
+        }
+    }
+
+    // Užtikriname, kad maišas atitiktų difficulty
+    while (hash.substr(0, difficulty) != hashPrefix) {
+        hash = calculateHash(); // Apskaičiuojame maišą iš naujo
+        for (int i = 0; i < difficulty; ++i) {
+            hash = "0" + hash.substr(0, hash.size() - 1); // Pridėti nulį priekyje ir pašalinti paskutinį simbolį
+            if (hash.size() > 64) {
+                hash = hash.substr(0, 64); // Jei maišas per ilgas, sumažiname iki 64 simbolių
+            }
+        }
+        nonce++; // Atnaujiname nonce kiekvieną kartą
+    }
+
+    timestamp = std::time(nullptr); // Nustatome laiko žymę
+
+    // Rašome bloką į failą
+    std::ofstream outFile("block.txt", std::ios::app); // Atidaryti failą su append režimu
+
+    if (!outFile.is_open()) {
+        std::cerr << "Klaida: Nepavyko atidaryti failo rašymui.\n";  // Pridedame klaidos pranešimą, jei failas neatidaromas
+    } else {
         outFile << "Bloko maišos reikšmė: " << hash << "\n";
         outFile << "Ankstesnio bloko maišos reikšmė: " << previousHash << "\n";
 
@@ -71,11 +96,8 @@ void Block::mineBlock() {
         outFile << "Nonce: " << nonce << "\n";
         outFile << "Sudėtingumas: " << difficulty << "\n";
         outFile << "----------------------------------------\n";
-        outFile.close(); // Uždarykime failą
-    } else {
-        std::cerr << "Klaida: Nepavyko atidaryti failo rašymui.\n";
+        outFile.close();
+        
+        std::cout << "Blokas sėkmingai įrašytas į failą 'block.txt'.\n";
     }
-
-    // Parodome pranešimą apie sėkmingą maišą
-    std::cout << "Blokas sekmingai irasytas i faila 'block.txt'.\n";
 }
