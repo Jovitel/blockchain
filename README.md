@@ -229,6 +229,7 @@ Bloko maišos kodas: Bloko maišod kodas yra generuojamas naudojant daugybę par
 * Versiją
 * Sunkumo lygį
 * Nonce reikšmę
+  
 **5. Bloko Duomenų Įrašymas į Failą**
 
 Po to, kai blokas yra sėkmingai iškastas, jo duomenys įrašomi į failą block.txt.
@@ -266,4 +267,74 @@ Vartotojas: 536f7068696120353533366a3730363836393631323033353533366a37303638, Ba
 Vartotojas: 4d69612036346636393631323033363466363936313230333633343636333633, Balansas: 28102
 Vartotojas: 49736162656c6c61203734393733363136323635366f36713631323033373439, Balansas: 17650
 Vartotojas: 4176612038343137363631323033383431373636313230333833343331333733, Balansas: 24553
+```
+## Bandymas. Bloko kasimas per tam tikrą laiką
+
+Galima pasirinkti atlikti bandymą
+
+```
+Ar norite sugeneruoti vartotojus? (t/n): t
+Vartotojai sugeneruoti ir irasyti i users.txt faila.
+Ar norite sugeneruoti transakcijas? (t/n): t
+Pradinis UTXO sarasas sukurtas is vartotoju balansu.
+Generuojamos transakcijos... (10000 transakciju)
+Ar norite generuoti blokus tol, kol yra neitrauktu transakciju? (t/n): n
+Kiek bloku norite sugeneruoti? 5
+Ar norite atlikti bandyma? (t/n): t //pasirenkama ar norima atlikti bandymą
+Per kiek s norite generuoti? 5
+Blokas sekmingai irasytas i faila 'block.txt'.
+Blokas #1 buvo sekmingai iskastas su 10 transakcijomis.
+Blokai buvo sugeneruoti per 13.7082 milisekundziu.
+Programos vykdymas baigtas.
+```
+Pasirenkama, per kiek laiko norima sugeneruot blokus, jei netelpama į laiko intervalą terminale pranešama
+
+```
+ // Jei vartotojas nenori generuoti blokus iki kol nėra neįtrauktų transakcijų
+        int blockCount;
+        std::cout << "Kiek bloku norite sugeneruoti? ";
+        std::cin >> blockCount;
+        std::cout << "Ar norite atlikti bandyma? (t/n): ";
+        std::cin >> s;
+        if (s == 't' || s == 'T') {
+            int m;
+            std::cout << "Per kiek s norite generuoti? ";
+            std::cin >> m;
+
+            // Laiko pradžia
+            auto start = std::chrono::high_resolution_clock::now();
+
+            for (int i = 0; i < blockCount && !generatedTransactions.empty(); ++i) {
+                // Patikriname, kiek laiko praėjo
+                auto now = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration<double>(now - start).count();  // Laiko trukmė su dešimtainiu tikslumu
+                
+                if (duration > m / 1000.0) {  // Palyginame su sekundėmis, nes m yra milisekundėmis
+                    std::cout << "Laiko limitas virsytas, nutraukiame generavima.\n";
+                    break;
+                }
+
+                std::vector<Transaction> blockTransactions;
+
+                for (int j = 0; j < transactionsPerBlock && !generatedTransactions.empty(); ++j) {
+                    blockTransactions.push_back(generatedTransactions.back());
+                    generatedTransactions.pop_back();
+                }
+
+                std::string previousHash = (i == 0) ? "2" : blockchain.back().calculateHash();
+                Block newBlock(previousHash, blockTransactions, difficulty);
+                newBlock.mineBlock();
+
+                blockchain.push_back(newBlock);
+                std::cout << "Blokas #" << (i + 1) << " buvo sekmingai iskastas su " << blockTransactions.size() << " transakcijomis.\n";
+
+                // Atlikti vartotojų balansų atnaujinimą po bloko maišos radimo
+                updateUserBalances(users);
+            }
+
+            // Užfiksuojame laiką, per kurį buvo sugeneruoti blokai (milisekundėmis su dešimtainiu tikslumu)
+            auto end = std::chrono::high_resolution_clock::now();
+            auto totalDuration = std::chrono::duration<double>(end - start).count();  // Vėl naudojame double tipo trukmę
+            std::cout << "Blokai buvo sugeneruoti per " << totalDuration * 1000 << " milisekundziu.\n";  // Padauginame iš 1000, kad rodyti milisekundes
+        
 ```
