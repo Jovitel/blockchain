@@ -99,10 +99,8 @@ std::string generateHash(const std::string& input) {
 
     std::string hash;
     if (input.length() <= 64) {
-        // Jei įvesties ilgis <= 64, naudojame pirmąjį metodą
         std::string asciiHash = stringToASCII(input);
 
-        // Pridedame daugiau simbolių, jei reikia
         int attempt = 0;
         const int maxAttempts = 100; // Maksimalus bandymų skaičius
 
@@ -112,20 +110,14 @@ std::string generateHash(const std::string& input) {
             attempt++;
         }
 
-        // Apkarpome iki 64 simbolių
         if (asciiHash.length() > 64) {
             asciiHash = asciiHash.substr(0, 64);
         }
-
         hash = asciiHash;
     } else {
-        // Jei įvesties ilgis > 64, naudojame antrąjį metodą
         hash = processLongerInput(input);
     }
-
-    // Patikrinkite maišos ilgio
     if (hash.length() < 64) {
-        // Pridėti simbolius, kad pasiektumėte 64 simbolių ilgį
         while (hash.length() < 64) {
             hash += "0"; // Galite pasirinkti kitus simbolius, jei norite
         }
