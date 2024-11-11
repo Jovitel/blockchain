@@ -1,8 +1,0 @@
-Bloko maišos reikšmė: 0139129eb1b199191211ed1b11991212e9126aaeceeea0000000000000000000
-Ankstesnio bloko maišos reikšmė: 2
-Laiko žyma: 2024-11-07 22:16:33
-Versija: v0.2
-Merkle šaknies maišas: 121bae22135201b171b22171a1d18131023f91118131ee1a1c101d1a14000000
-Nonce: 0
-Sudėtingumas: 1
-----------------------------------------

@@ -98,6 +98,6 @@ void Block::mineBlock() {
         outFile << "----------------------------------------\n";
         outFile.close();
         
-        std::cout << "Blokas sekmingai irašytas i faila 'block.txt'.\n";
+        std::cout << "Blokas sekmingai irasytas i faila 'block.txt'.\n";
     }
 }
