@@ -267,3 +267,86 @@ Vartotojas: 4d69612036346636393631323033363466363936313230333633343636333633, Ba
 Vartotojas: 49736162656c6c61203734393733363136323635366f36713631323033373439, Balansas: 17650
 Vartotojas: 4176612038343137363631323033383431373636313230333833343331333733, Balansas: 24553
 ```
+## Lygiagretus blokų kasimo realizavimas
+
+Naudojau **OpenMP** - tai atviro kodo biblioteka ir API (programavimo sąsaja), skirta lygiagretiniam programavimui daugialypiuose kompiuteriuose su daugiaprocesoriniais ir daugiagijais procesoriais. Ji suteikia paprastą būdą programoms naudoti kelias gijas (threads) ir išnaudoti kompiuterio daugiaprocesorius efektyviau, taip padidinant našumą.
+
+Į programos kodą pridėjau:
+
+```
+#include <thread>
+#include <omp.h> 
+```
+
+```
+if (parallelMining == 't' || parallelMining == 'T') {
+            int blockCount;
+    std::cout << "Kiek bloku norite sugeneruoti? ";
+    std::cin >> blockCount;
+
+    #pragma omp parallel for
+    for (int i = 0; i < blockCount && !generatedTransactions.empty(); ++i) {
+         std::vector<Transaction> blockTransactions;
+
+        // Surenkame transakcijas blokui
+        #pragma omp critical
+        {
+            for (int j = 0; j < transactionsPerBlock && !generatedTransactions.empty(); ++j) {
+                blockTransactions.push_back(generatedTransactions.back());
+                generatedTransactions.pop_back();
+            }
+        }
+
+        std::string previousHash = (i == 0) ? "2" : blockchain.back().calculateHash();
+        Block newBlock(previousHash, blockTransactions, difficulty);
+
+        // Lygiagrečiai kasama bloką
+        newBlock.mineBlock();
+
+        // Atnaujiname blokų grandinę ir balansus po bloko iškasimo
+        #pragma omp critical
+        {
+            blockchain.push_back(newBlock);
+            std::cout << "Blokas #" << (i + 1) << " buvo sekmingai iskastas su " << blockTransactions.size() << " transakcijomis.\n";
+            updateUserBalances(users);
+        }
+```
+
+Jei norite naudoti OpenMP savo C++ projekte, turite pridėti specialią vėliavą (-fopenmp), kad kompiuteris žinotų, jog reikia naudoti OpenMP funkcionalumą.
+
+Taigi norint paleisti programą, dabar reiki naudoti šią komandą:
+
+```
+g++ -fopenmp main.cpp user.cpp transaction.cpp utxo.cpp hash_function.cpp block.cpp -o blockchain
+
+blockchain.exe
+```
+Viską galima vykdyti pasirinkus (t):
+
+```
+Ar norite naudoti lygiagretu bloku kasima? (t/n): t      ---lygiagretus blokų kasimas pasirenkamas
+Ar norite sugeneruoti vartotojus? (t/n): t
+Vartotojai sugeneruoti ir irasyti i users.txt faila.
+Ar norite sugeneruoti transakcijas? (t/n): t
+Pradinis UTXO sarasas sukurtas is vartotoju balansu.
+Generuojamos transakcijos... (10000 transakciju)
+Ar norite generuoti blokus tol, kol yra neitrauktu transakciju? (t/n): n    --- lygiagretus kasimas veikia, kai pasirenki blokų skaičių
+Kiek bloku norite sugeneruoti? 5
+Blokas sekmingai irasytas i faila 'block.txt'.
+Blokas #1 buvo sekmingai iskastas su 10 transakcijomis.
+Blokas sekmingai irasytas i faila 'block.txt'.
+Blokas #2 buvo sekmingai iskastas su 10 transakcijomis.
+Blokas sekmingai irasytas i faila 'block.txt'.
+Blokas #3 buvo sekmingai iskastas su 10 transakcijomis.
+Blokas sekmingai irasytas i faila 'block.txt'.
+Blokas #4 buvo sekmingai iskastas su 10 transakcijomis.
+Blokas sekmingai irasytas i faila 'block.txt'.
+Blokas #5 buvo sekmingai iskastas su 10 transakcijomis.
+Programos vykdymas baigtas.
+```
+
+Pasirenkamas gijų skaičius: 
+
+```
+ omp_set_num_threads(4);
+```
