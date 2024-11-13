@@ -1,0 +1,40 @@
+Bloko maišos reikšmė: 013910c1711b9e1112610e1217a11109b11910eaecf536000000000000000000
+Ankstesnio bloko maišos reikšmė: 2
+Laiko žyma: 2024-11-13 19:54:24
+Versija: v0.2
+Merkle šaknies maišas: 1217182113242111f1d201b9e1215221723121b201b1419171e1619121710000
+Nonce: 0
+Sudėtingumas: 1
+----------------------------------------
+Bloko maišos reikšmė: 01c242b231022282c1712191919142322171b221c1c20211b1ce17f141a14900
+Ankstesnio bloko maišos reikšmė: 13910c1711b9e1112610e1217a11109b11910eaecf5360000000000000000000
+Laiko žyma: 2024-11-13 19:54:24
+Versija: v0.2
+Merkle šaknies maišas: 20191ea171a1f13e1b1c1714a1c141c111319171b1d141b201e5192420100000
+Nonce: 0
+Sudėtingumas: 1
+----------------------------------------
+Bloko maišos reikšmė: 01c1313c222af221b17241a2421e13211318101024c121c17131c141a1490000
+Ankstesnio bloko maišos reikšmė: 1c242b231022282c1712191919142322171b221c1c20211b1ce17f141a149000
+Laiko žyma: 2024-11-13 19:54:24
+Versija: v0.2
+Merkle šaknies maišas: 1b20122411f1c15112415e17221514f1b1a18221e1d14a11231320141b100000
+Nonce: 0
+Sudėtingumas: 1
+----------------------------------------
+Bloko maišos reikšmė: 01c2512121a131723142427251c2124f1321202214f24171317201b101a14900
+Ankstesnio bloko maišos reikšmė: 1c1313c222af221b17241a2421e13211318101024c121c17131c141a14900000
+Laiko žyma: 2024-11-13 19:54:24
+Versija: v0.2
+Merkle šaknies maišas: 1b1be1a132413231719131c171c1414420111b1a23141c2312131c1617141400
+Nonce: 0
+Sudėtingumas: 1
+----------------------------------------
+Bloko maišos reikšmė: 01c18241ab1fa17f111e2524182d17246129141d13f121901e141a1490000000
+Ankstesnio bloko maišos reikšmė: 1c2512121a131723142427251c2124f1321202214f24171317201b101a149000
+Laiko žyma: 2024-11-13 19:54:24
+Versija: v0.2
+Merkle šaknies maišas: 211b1b1b231c1ca20241e21221d14141b1624111324e1ce17122222181c14000
+Nonce: 0
+Sudėtingumas: 1
+----------------------------------------
