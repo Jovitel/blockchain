@@ -1,4 +1,4 @@
-#  Supaprastintos blokų grandinės (blockchain) kūrimas v0.2
+#  Supaprastintos blokų grandinės (blockchain) kūrimas v0.2 + papildoma
 
 Šios užduoties tikslas – sukurti supaprastintą blokų grandinę (angl. blockchain), kurios duomenų sluoksnio struktūra pavaizduota
 žemiau:
